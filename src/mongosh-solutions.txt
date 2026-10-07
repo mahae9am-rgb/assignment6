@@ -1,0 +1,414 @@
+Q1:
+use c48mongo
+db.createCollection('books',{
+    validator:{
+        $jsonSchema:{
+            bsonType:'object',
+            required:['title'],
+            properties:{
+                title:{
+                    bsonType:'string',
+                    minLength:1,
+                    description:'title is required and must non-empty string'
+                }
+            }
+        }
+    }
+})
+//Result:{ok:1}
+
+//q2
+db.authors.insertOne({name:{"Author_1",nationally:"British"}})
+Result:{
+    "acknowledged": true,
+    "insertedId": "6ac105ea5287b3578c08c971"
+}
+
+/q3
+db.createCollection("logs",{
+    capped: true,
+    size: 100000
+
+    })  
+// Result :{ok:1}
+//q4
+db.books.createIndex({title:1})
+//Result "title_1"
+q5
+ db.books.insertOne({title:"Book1",author:"Ali",year:1937,genres:["Fantacy","Adventure"]})
+//Result:{
+    "acknowledged": true,
+    "insertedId": "6ac10676ae3b7add8ffc3391"
+}
+
+q6
+db.books.insertMany([
+    { title: "Future", author: "George Orwell", year: 2020, genres: ["Science Fiction"] },
+    { title: "To Kill a Mockingbird", author: "Harper Lee", year: 1960, genres: ["Classic", "Fiction"] },
+    { title: "Brave New World", author: "Aldous Huxley", year: 2006, genres: ["Dystopian", "Science Fiction"] }
+])
+ Result:{
+    "acknowledge": true,
+    "insertedIds": {
+        "0": "6ac0efdd0642cc0097a803bc",
+        "1": "6ac0efdd0642cc0097a803bd",
+        "2": "6ac0efdd0642cc0097a803be"
+    }
+}
+
+q7
+db.logs.insertOne({ book_id: ObjectId("6abff2eb26890ad7390248fd"), action: "borrowed" })
+Result:{
+    "acknowledged": true,
+    "insertedId": "6ac63b099428ef4233104ad2"
+}
+q8
+db.books.updateOne({title:"Future",{$set:{year:2022}}})
+Result:{
+    "acknowledged": true,
+    "matchedCount": 1,
+    "modifiedCount": 0
+}
+q9
+db.books.findOne({ title: "Brave New World" })
+Result:
+{
+    "_id": "6abff2eb26890ad7390248ff",
+    "title": "Brave New World",
+    "author": "Aldous Huxley",
+    "year": 2006,
+    "genre": [
+        "Dystopian",
+        "Science Fiction"
+    ]
+}
+q10
+db.books.find({ year: { $gte: 1990, $lte: 2022 } })
+[
+    {
+        "_id": "6abff2eb26890ad7390248fd",
+        "title": "1984",
+        "author": "George Orwell",
+        "year": 2020,
+        "genre": [
+            "Science Fiction"
+        ]
+    },
+    {
+        "_id": "6abff2eb26890ad7390248ff",
+        "title": "Brave New World",
+        "author": "Aldous Huxley",
+        "year": 2006,
+        "genre": [
+            "Dystopian",
+            "Science Fiction"
+        ]
+    }
+]
+q11
+db.books.find({genres:"Secience Fiction"})
+Result:
+[
+    {
+        "_id": "6abff2eb26890ad7390248fd",
+        "title": "1984",
+        "author": "George Orwell",
+        "year": 2020,
+        "genre": [
+            "Science Fiction"
+        ]
+    },
+    {
+        "_id": "6abff2eb26890ad7390248ff",
+        "title": "Brave New World",
+        "author": "Aldous Huxley",
+        "year": 2006,
+        "genre": [
+            "Dystopian",
+            "Science Fiction"
+        ]
+    },
+    {
+        "_id": "6ac001fa8a20dc286d676b29",
+        "title": "Future",
+        "author": "George Orwell",
+        "year": 2022,
+        "genre": [
+            "Science Fiction"
+        ]
+    }
+]
+q12
+
+db.books.find().sort({ year: -1 }).skip(2).limit(3)
+Result:
+[
+    {
+        "_id": "6abff2eb26890ad7390248ff",
+        "title": "Brave New World",
+        "author": "Aldous Huxley",
+        "year": 2006,
+        "genre": [
+            "Dystopian",
+            "Science Fiction"
+        ]
+    },
+    {
+        "_id": "6abfefa4c0b133f395f8bfbb",
+        "title": "To Kill a Mockingbird",
+        "author": "Harper Lee",
+        "year": 1960,
+        "genre": [
+            "Classic",
+            "Fiction"
+        ]
+    },
+    {
+        "_id": "6abff58b3fae78c8658f7b29",
+        "title": "Book1",
+        "author": "Ali",
+        "year": 1937,
+        "genres": [
+            "Fantasy",
+            "Adventure"
+        ]
+    }
+]
+
+q13
+db.books.find({year:{$type:"int"}})
+Result:
+{
+    "data": [
+        {
+            "_id": "6abfefa4c0b133f395f8bfbb",
+            "title": "To Kill a Mockingbird",
+            "author": "Harper Lee",
+            "year": 1960,
+            "genre": [
+                "Classic",
+                "Fiction"
+            ]
+        },
+        {
+            "_id": "6abff2eb26890ad7390248fd",
+            "title": "1984",
+            "author": "George Orwell",
+            "year": 2020,
+            "genre": [
+                "Science Fiction"
+            ]
+        },
+        {
+            "_id": "6abff2eb26890ad7390248ff",
+            "title": "Brave New World",
+            "author": "Aldous Huxley",
+            "year": 2006,
+            "genre": [
+                "Dystopian",
+                "Science Fiction"
+            ]
+        },
+        {
+            "_id": "6abff58b3fae78c8658f7b29",
+            "title": "Book1",
+            "author": "Ali",
+            "year": 1937,
+            "genres": [
+                "Fantasy",
+                "Adventure"
+            ]
+        },
+        {
+            "_id": "6ac001fa8a20dc286d676b29",
+            "title": "Future",
+            "author": "George Orwell",
+            "year": 2022,
+            "genre": [
+                "Science Fiction"
+            ]
+        },
+        {
+            "_id": "6ac10676ae3b7add8ffc3391",
+            "title": "Book1",
+            "author": "Ali",
+            "year": 1937,
+            "genres": [
+                "Fantasy",
+                "Adventure"
+            ]
+        }
+    ]
+}
+q14
+db.books.find({genres:{$nin:["Horror","Science Fiction"]}})
+Result:
+[
+    {
+        "_id": "6abfefa4c0b133f395f8bfbb",
+        "title": "To Kill a Mockingbird",
+        "author": "Harper Lee",
+        "year": 1960,
+        "genres": [
+            "Classic",
+            "Fiction"
+        ]
+    },
+    {
+        "_id": "6abff58b3fae78c8658f7b29",
+        "title": "Book1",
+        "author": "Ali",
+        "year": 1937,
+        "genres": [
+            "Fantasy",
+            "Adventure"
+        ]
+    },
+    {
+        "_id": "6ac10676ae3b7add8ffc3391",
+        "title": "Book1",
+        "author": "Ali",
+        "year": 1937,
+        "genres": [
+            "Fantasy",
+            "Adventure"
+        ]
+    }
+]
+
+q15
+db.books.deleteMany({year:{$lt:2000}})
+Result:
+{
+    "acknowledge": true,
+    "deletedCount": 3
+}
+q16
+db.books.aggregate([
+        {$match:{year:{$gte:2000}}},
+        {$sort:{year:-1}}])
+Result:
+[
+    {
+        "_id": "6ac001fa8a20dc286d676b29",
+        "title": "Future",
+        "author": "George Orwell",
+        "year": 2022,
+        "genres": [
+            "Science Fiction"
+        ]
+    },
+    {
+        "_id": "6abff2eb26890ad7390248fd",
+        "title": "1984",
+        "author": "George Orwell",
+        "year": 2020,
+        "genres": [
+            "Science Fiction"
+        ]
+    },
+    {
+        "_id": "6abff2eb26890ad7390248ff",
+        "title": "Brave New World",
+        "author": "Aldous Huxley",
+        "year": 2006,
+        "genres": [
+            "Dystopian",
+            "Science Fiction"
+        ]
+    }
+]
+q17
+db.books.aggregate([ {$match:{year:{$gte:2000}}},{$project:{title:1,author:1,year:1}}])
+Result:[
+    {
+        "_id": "6abff2eb26890ad7390248fd",
+        "title": "1984",
+        "author": "George Orwell",
+        "year": 2020
+    },
+    {
+        "_id": "6abff2eb26890ad7390248ff",
+        "title": "Brave New World",
+        "author": "Aldous Huxley",
+        "year": 2006
+    },
+    {
+        "_id": "6ac001fa8a20dc286d676b29",
+        "title": "Future",
+        "author": "George Orwell",
+        "year": 2022
+    }
+]
+q18
+db.books.aggregate([{$unwind:"$genres"}])
+Result:
+[
+    {
+        "_id": "6abff2eb26890ad7390248fd",
+        "title": "1984",
+        "author": "George Orwell",
+        "year": 2020,
+        "genres": "Science Fiction"
+    },
+    {
+        "_id": "6abff2eb26890ad7390248ff",
+        "title": "Brave New World",
+        "author": "Aldous Huxley",
+        "year": 2006,
+        "genres": "Dystopian"
+    },
+    {
+        "_id": "6abff2eb26890ad7390248ff",
+        "title": "Brave New World",
+        "author": "Aldous Huxley",
+        "year": 2006,
+        "genres": "Science Fiction"
+    },
+    {
+        "_id": "6ac001fa8a20dc286d676b29",
+        "title": "Future",
+        "author": "George Orwell",
+        "year": 2022,
+        "genres": "Science Fiction"
+    }
+]
+q19
+db.logs.aggregate([
+       {$lookup:{
+        from:"books",
+        localField:"book_id",
+        foreignField:"_id",
+        as:"book_details"
+       }},{
+        $project:{
+            _id:0,
+            action:1,
+            "book_details.title":1,
+            "book_details.author":1,
+            "book_details.year":1
+        }
+       }])
+Result:
+[
+    {
+        "action": "borrowed",
+        "book_details": [
+            {
+                "title": "Brave New World",
+                "author": "Aldous Huxley",
+                "year": 2006
+            }
+        ]
+    },
+    {
+        "action": "returned",
+        "book_details": [
+            {
+                "title": "1984",
+                "author": "George Orwell",
+                "year": 2020
+            }
+        ]
+    }
+]
